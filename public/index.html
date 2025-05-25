@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+    <title>url shortner</title>
+</head>
+<body>
+    <form action="" id="url-shortened">
+        <label for="url">URL Shortner</label>
+        <span>Enter Url</span>
+        <input type="text" name="url" >
+        Enter ShortCode
+        <input type="text" name="shortCode">
+        <button class="submit" type="submit">Submit</button>
+
+        <h2>Shortened-URL</h2>
+    <div class="list">
+        <ul id="shortened-url"></ul>
+    </div>
+    </form>
+
+    
+    <script>
+        const fetchShortURL = async ()=>{
+            const response  = await fetch('/links');
+            const links = await response.json()
+            // console.log('links:', links);
+
+            const list = document.querySelector('#shortened-url');
+            list.innerHTML = "";
+
+            for(const [shortCode, url] of Object.entries(links)){
+                const li = document.createElement('li');    
+                const truncateURL = url.length >40? `${url.slice(0,35)}...`:url;
+
+                li.innerHTML = `<a href = "/${shortCode}" target = "_blank"> ${shortCode}</a>-${truncateURL}`
+                
+
+                list.appendChild(li);
+
+            }
+        }
+
+
+
+        document.querySelector('.submit')
+        .addEventListener('click',async (event)=>{
+            event.preventDefault();
+
+            const form = document.getElementById('url-shortened');
+            const formData = new FormData(form);
+
+            const url = formData.get('url');
+            const shortCode = formData.get('shortCode');
+
+            // console.log(url,shortCode);
+
+            try{
+                const response = await fetch("/shorten",{
+                    method:"POST",
+                    headers:{"Content-Type":"application/JSON"},
+                    body: JSON.stringify({url, shortCode})
+                });
+
+                if(response.ok){
+                    alert("Successfully submitted");
+                    form.reset();
+                }else{
+                    const errMsg = await response.text();
+                    alert(errMsg);
+                }
+
+            }catch(error){
+
+            }
+    })
+
+    fetchShortURL();
+    </script>
+</body>
+</html>
