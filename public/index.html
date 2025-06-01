@@ -6,12 +6,12 @@
     <link rel="stylesheet" href="index.css">
     <title>url shortner</title>
 </head>
-<body>
+<body class="animated-bg">
     <form action="" id="url-shortened">
         <label for="url">URL Shortner</label>
-        <span>Enter Url</span>
+        <span>Enter URL</span>
         <input type="text" name="url" >
-        Enter ShortCode
+        <span>Enter ShortCode</span>
         <input type="text" name="shortCode">
         <button class="submit" type="submit">Submit</button>
 
@@ -20,9 +20,16 @@
         <ul id="shortened-url"></ul>
     </div>
     </form>
-
     
     <script>
+        const spotlight = document.querySelector('.spotlight');
+
+        document.addEventListener('mousemove', (e) => {
+        spotlight.style.left = `${e.clientX - 150}px`;
+        spotlight.style.top = `${e.clientY - 150}px`;
+        });
+
+
         const fetchShortURL = async ()=>{
             const response  = await fetch('/links');
             const links = await response.json()
@@ -67,6 +74,7 @@
                 if(response.ok){
                     alert("Successfully submitted");
                     form.reset();
+                    fetchShortURL();
                 }else{
                     const errMsg = await response.text();
                     alert(errMsg);
